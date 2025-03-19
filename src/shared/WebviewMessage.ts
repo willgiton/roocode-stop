@@ -114,6 +114,7 @@ export interface WebviewMessage {
 		| "browserConnectionResult"
 		| "remoteBrowserEnabled"
 		| "language"
+		| "remainUseTool"
 	text?: string
 	disabled?: boolean
 	askResponse?: ClineAskResponse

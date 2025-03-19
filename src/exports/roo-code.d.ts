@@ -254,6 +254,7 @@ export type GlobalStateKey =
 	| "showRooIgnoredFiles"
 	| "remoteBrowserEnabled"
 	| "language"
+	| "remainUseTool" // Allows remain LLM to use tools
 
 export type ConfigurationKey = GlobalStateKey | SecretKey
 

@@ -159,6 +159,7 @@ export interface ExtensionState {
 	machineId?: string
 	showRooIgnoredFiles: boolean // Whether to show .rooignore'd files in listings
 	renderContext: "sidebar" | "editor"
+	remainUseTool?: boolean // Whether to allow LLM to use tools without approval
 }
 
 export type { ClineMessage, ClineAsk, ClineSay }
@@ -176,6 +177,7 @@ export interface ClineSayTool {
 		| "switchMode"
 		| "newTask"
 		| "finishTask"
+		| "remainUseTool"
 	path?: string
 	diff?: string
 	content?: string

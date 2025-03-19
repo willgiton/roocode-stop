@@ -973,6 +973,10 @@ export class ClineProvider extends EventEmitter<ClineProviderEvents> implements 
 						await this.updateGlobalState("alwaysAllowSubtasks", message.bool)
 						await this.postStateToWebview()
 						break
+					case "remainUseTool":
+						await this.updateGlobalState("remainUseTool", message.bool ?? false) // <-- 设置断点
+						await this.postStateToWebview()
+						break
 					case "askResponse":
 						this.getCurrentCline()?.handleWebviewAskResponse(
 							message.askResponse!,
@@ -2673,6 +2677,7 @@ export class ClineProvider extends EventEmitter<ClineProviderEvents> implements 
 			browserToolEnabled: stateValues.browserToolEnabled ?? true,
 			telemetrySetting: stateValues.telemetrySetting || "unset",
 			showRooIgnoredFiles: stateValues.showRooIgnoredFiles ?? true,
+			remainUseTool: stateValues.remainUseTool ?? false,
 		}
 	}
 

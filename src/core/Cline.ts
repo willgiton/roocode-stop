@@ -892,6 +892,7 @@ export class Cline extends EventEmitter<ClineEvents> {
 			if (didEndLoop) {
 				// For now a task never 'completes'. This will only happen if
 				// the user hits max requests and denies resetting the count.
+
 				break
 			} else {
 				nextUserContent = [{ type: "text", text: formatResponse.noToolsUsed() }]
@@ -1079,7 +1080,7 @@ export class Cline extends EventEmitter<ClineEvents> {
 	async *attemptApiRequest(previousApiReqIndex: number, retryAttempt: number = 0): ApiStream {
 		let mcpHub: McpHub | undefined
 
-		const { mcpEnabled, alwaysApproveResubmit, requestDelaySeconds, rateLimitSeconds } =
+		const { mcpEnabled, alwaysApproveResubmit, requestDelaySeconds, rateLimitSeconds, remainUseTool } =
 			(await this.providerRef.deref()?.getState()) ?? {}
 
 		let rateLimitDelay = 0
@@ -3436,11 +3437,59 @@ export class Cline extends EventEmitter<ClineEvents> {
 				// if the model did not tool use, then we need to tell it to either use a tool or attempt_completion
 				const didToolUse = this.assistantMessageContent.some((block) => block.type === "tool_use")
 				if (!didToolUse) {
-					this.userMessageContent.push({
-						type: "text",
-						text: formatResponse.noToolsUsed(),
-					})
-					this.consecutiveMistakeCount++
+					const { remainUseTool } = (await this.providerRef.deref()?.getState()) ?? {}
+					if (remainUseTool) {
+						this.userMessageContent.push({
+							type: "text",
+							text: formatResponse.noToolsUsed(),
+						})
+						this.consecutiveMistakeCount++
+					} else {
+						const completeMessage = JSON.stringify({
+							tool: "remainUseTool",
+							content: "LLM 的响应中未使用任何工具。是否提醒LLM使用工具来完成任务？",
+						})
+
+						const { response, text: userText, images: userImages } = await this.ask("tool", completeMessage)
+
+						if (response === "yesButtonClicked") {
+							// 用户同意继续提醒LLM使用工具
+							this.userMessageContent.push({
+								type: "text",
+								text: formatResponse.noToolsUsed(),
+							})
+							this.consecutiveMistakeCount++
+						} else if (response === "messageResponse" && userText) {
+							// 用户直接在输入框中输入了新指令
+							await this.say(
+								"user_feedback", // 显示用户的反馈
+								userText,
+								userImages,
+							)
+
+							// 添加用户的反馈到userMessageContent
+							this.userMessageContent.push({
+								type: "text",
+								text: `用户提供了以下反馈/指令：\n<feedback>\n${userText}\n</feedback>`,
+							})
+
+							if (userImages && userImages.length > 0) {
+								this.userMessageContent.push(...formatResponse.imageBlocks(userImages))
+							}
+
+							this.consecutiveMistakeCount = 0 // 重置错误计数器
+						} else {
+							// 用户拒绝提醒LLM使用工具
+							// 1. 向用户显示特殊的完成消息
+							await this.say(
+								"completion_result", // 使用completion_result类型代替text类型
+								"任务已完成。您可以继续输入新指令。",
+							)
+
+							// 2. 添加空的任务完成消息，这会启用输入框
+							await this.ask("completion_result", "", false)
+						}
+					}
 				}
 
 				const recDidEndLoop = await this.recursivelyMakeClineRequests(this.userMessageContent)

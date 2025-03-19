@@ -161,6 +161,11 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 									setPrimaryButtonText(t("chat:completeSubtaskAndReturn"))
 									setSecondaryButtonText(undefined)
 									break
+								case "remainUseTool":
+									// 为 remainUseTool 类型只显示 Approve 按钮
+									setPrimaryButtonText("Approve")
+									setSecondaryButtonText(undefined)
+									break
 								default:
 									setPrimaryButtonText(t("chat:approve.title"))
 									setSecondaryButtonText(t("chat:reject.title"))

@@ -16,6 +16,7 @@ export interface ExtensionStateContextType extends ExtensionState {
 	didHydrateState: boolean
 	showWelcome: boolean
 	theme: any
+	remainUseTool?: boolean
 	mcpServers: McpServer[]
 	currentCheckpoint?: string
 	filePaths: string[]
@@ -78,6 +79,7 @@ export interface ExtensionStateContextType extends ExtensionState {
 	setTelemetrySetting: (value: TelemetrySetting) => void
 	remoteBrowserEnabled?: boolean
 	setRemoteBrowserEnabled: (value: boolean) => void
+	setRemainUseTool: (value: boolean) => void
 	machineId?: string
 }
 
@@ -153,6 +155,7 @@ export const ExtensionStateContextProvider: React.FC<{ children: React.ReactNode
 		telemetrySetting: "unset",
 		showRooIgnoredFiles: true, // Default to showing .rooignore'd files with lock symbol (current behavior).
 		renderContext: "sidebar",
+		remainUseTool: true, // Default to allowing LLM to use tools
 	})
 
 	const [didHydrateState, setDidHydrateState] = useState(false)
@@ -302,6 +305,7 @@ export const ExtensionStateContextProvider: React.FC<{ children: React.ReactNode
 		setTelemetrySetting: (value) => setState((prevState) => ({ ...prevState, telemetrySetting: value })),
 		setShowRooIgnoredFiles: (value) => setState((prevState) => ({ ...prevState, showRooIgnoredFiles: value })),
 		setRemoteBrowserEnabled: (value) => setState((prevState) => ({ ...prevState, remoteBrowserEnabled: value })),
+		setRemainUseTool: (value) => setState((prevState) => ({ ...prevState, remainUseTool: value })),
 	}
 
 	return <ExtensionStateContext.Provider value={contextValue}>{children}</ExtensionStateContext.Provider>

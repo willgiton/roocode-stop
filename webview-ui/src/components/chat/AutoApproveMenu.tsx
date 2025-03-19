@@ -4,8 +4,19 @@ import { useExtensionState } from "../../context/ExtensionStateContext"
 import { useAppTranslation } from "../../i18n/TranslationContext"
 import { vscode } from "../../utils/vscode"
 
+type ActionId =
+	| "readFiles"
+	| "editFiles"
+	| "executeCommands"
+	| "useBrowser"
+	| "useMcp"
+	| "switchModes"
+	| "subtasks"
+	| "retryRequests"
+	| "remainUseTool"
+
 interface AutoApproveAction {
-	id: string
+	id: ActionId
 	label: string
 	enabled: boolean
 	shortName: string
@@ -21,6 +32,8 @@ const AutoApproveMenu = ({ style }: AutoApproveMenuProps) => {
 	const {
 		alwaysAllowReadOnly,
 		setAlwaysAllowReadOnly,
+		remainUseTool,
+		setRemainUseTool,
 		alwaysAllowWrite,
 		setAlwaysAllowWrite,
 		alwaysAllowExecute,
@@ -98,6 +111,13 @@ const AutoApproveMenu = ({ style }: AutoApproveMenuProps) => {
 			enabled: alwaysApproveResubmit ?? false,
 			description: t("chat:autoApprove.actions.retryRequests.description"),
 		},
+		{
+			id: "remainUseTool",
+			label: "Allow remain LLM to use tools",
+			shortName: "remainUseTool",
+			enabled: remainUseTool ?? false,
+			description: "Allows remain LLM to use tools without requiring approval.",
+		},
 	]
 
 	const toggleExpanded = useCallback(() => {
@@ -158,6 +178,12 @@ const AutoApproveMenu = ({ style }: AutoApproveMenuProps) => {
 		vscode.postMessage({ type: "alwaysApproveResubmit", bool: newValue })
 	}, [alwaysApproveResubmit, setAlwaysApproveResubmit])
 
+	const handleRemainUseToolChange = useCallback(() => {
+		const newValue = !(remainUseTool ?? false)
+		setRemainUseTool(newValue)
+		vscode.postMessage({ type: "remainUseTool", bool: newValue })
+	}, [remainUseTool, setRemainUseTool])
+
 	// Map action IDs to their specific handlers
 	const actionHandlers: Record<AutoApproveAction["id"], () => void> = {
 		readFiles: handleReadOnlyChange,
@@ -168,6 +194,7 @@ const AutoApproveMenu = ({ style }: AutoApproveMenuProps) => {
 		switchModes: handleModeSwitchChange,
 		subtasks: handleSubtasksChange,
 		retryRequests: handleRetryChange,
+		remainUseTool: handleRemainUseToolChange,
 	}
 
 	return (
