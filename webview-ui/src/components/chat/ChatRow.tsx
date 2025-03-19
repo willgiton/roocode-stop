@@ -249,6 +249,17 @@ export const ChatRowContent = ({
 		)
 
 		switch (tool.tool) {
+			case "remainUseTool":
+				return (
+					<>
+						<div style={headerStyle}>
+							{toolIcon("question")}
+							<span style={{ fontWeight: "bold" }}>
+								{tool.content}
+							</span>
+						</div>
+					</>
+				)
 			case "editedExistingFile":
 			case "appliedDiff":
 				return (

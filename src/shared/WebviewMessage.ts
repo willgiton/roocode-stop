@@ -104,8 +104,9 @@ export interface WebviewMessage {
 		| "showRooIgnoredFiles"
 		| "testBrowserConnection"
 		| "discoverBrowser"
-		| "browserConnectionResult"
-		| "remoteBrowserEnabled"
+| "browserConnectionResult"
+| "remoteBrowserEnabled"
+| "remainUseTool"
 	text?: string
 	disabled?: boolean
 	askResponse?: ClineAskResponse

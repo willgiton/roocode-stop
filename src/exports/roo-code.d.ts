@@ -214,9 +214,10 @@ export type GlobalStateKey =
 	| "browserToolEnabled"
 	| "lmStudioSpeculativeDecodingEnabled"
 	| "lmStudioDraftModelId"
-	| "telemetrySetting"
-	| "showRooIgnoredFiles"
-	| "remoteBrowserEnabled"
+| "telemetrySetting"
+| "showRooIgnoredFiles"
+| "remoteBrowserEnabled"
+| "remainUseTool"  // Allows remain LLM to use tools
 
 export type ConfigurationKey = GlobalStateKey | SecretKey
 

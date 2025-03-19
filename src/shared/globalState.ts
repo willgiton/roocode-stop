@@ -113,9 +113,10 @@ export const GLOBAL_STATE_KEYS = [
 	"browserToolEnabled",
 	"lmStudioSpeculativeDecodingEnabled",
 	"lmStudioDraftModelId",
-	"telemetrySetting",
-	"showRooIgnoredFiles",
-	"remoteBrowserEnabled",
+"telemetrySetting",
+"showRooIgnoredFiles",
+"remoteBrowserEnabled",
+"remainUseTool",
 ] as const
 
 type CheckGlobalStateKeysExhaustiveness =

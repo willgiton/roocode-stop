@@ -3,12 +3,23 @@ import { useCallback, useState } from "react"
 import { useExtensionState } from "../../context/ExtensionStateContext"
 import { vscode } from "../../utils/vscode"
 
+type ActionId = 
+  | "readFiles" 
+  | "editFiles" 
+  | "executeCommands"
+  | "useBrowser"
+  | "useMcp"
+  | "switchModes"
+  | "subtasks"
+  | "retryRequests"
+  | "remainUseTool"
+
 interface AutoApproveAction {
-	id: string
-	label: string
-	enabled: boolean
-	shortName: string
-	description: string
+id: ActionId
+label: string
+enabled: boolean
+shortName: string
+description: string
 }
 
 interface AutoApproveMenuProps {
@@ -17,9 +28,11 @@ interface AutoApproveMenuProps {
 
 const AutoApproveMenu = ({ style }: AutoApproveMenuProps) => {
 	const [isExpanded, setIsExpanded] = useState(false)
-	const {
+const {
 		alwaysAllowReadOnly,
 		setAlwaysAllowReadOnly,
+		remainUseTool,
+		setRemainUseTool,
 		alwaysAllowWrite,
 		setAlwaysAllowWrite,
 		alwaysAllowExecute,
@@ -89,13 +102,20 @@ const AutoApproveMenu = ({ style }: AutoApproveMenuProps) => {
 			enabled: alwaysAllowSubtasks ?? false,
 			description: "Allow creation and completion of subtasks without requiring approval.",
 		},
-		{
-			id: "retryRequests",
-			label: "Retry failed requests",
-			shortName: "Retries",
-			enabled: alwaysApproveResubmit ?? false,
-			description: "Automatically retry failed API requests when the provider returns an error response.",
-		},
+{
+id: "retryRequests",
+label: "Retry failed requests",
+shortName: "Retries",
+enabled: alwaysApproveResubmit ?? false,
+description: "Automatically retry failed API requests when the provider returns an error response.",
+},
+{
+id: "remainUseTool",
+label: "Allow remain LLM to use tools",
+shortName: "remainUseTool",
+enabled: remainUseTool ?? false,
+description: "Allows remain LLM to use tools without requiring approval.",
+},
 	]
 
 	const toggleExpanded = useCallback(() => {
@@ -150,11 +170,17 @@ const AutoApproveMenu = ({ style }: AutoApproveMenuProps) => {
 		vscode.postMessage({ type: "alwaysAllowSubtasks", bool: newValue })
 	}, [alwaysAllowSubtasks, setAlwaysAllowSubtasks])
 
-	const handleRetryChange = useCallback(() => {
-		const newValue = !(alwaysApproveResubmit ?? false)
-		setAlwaysApproveResubmit(newValue)
-		vscode.postMessage({ type: "alwaysApproveResubmit", bool: newValue })
-	}, [alwaysApproveResubmit, setAlwaysApproveResubmit])
+const handleRetryChange = useCallback(() => {
+const newValue = !(alwaysApproveResubmit ?? false)
+setAlwaysApproveResubmit(newValue)
+vscode.postMessage({ type: "alwaysApproveResubmit", bool: newValue })
+}, [alwaysApproveResubmit, setAlwaysApproveResubmit])
+
+const handleRemainUseToolChange = useCallback(() => {
+const newValue = !(remainUseTool ?? false)
+setRemainUseTool(newValue)
+vscode.postMessage({ type: "remainUseTool", bool: newValue })
+}, [remainUseTool, setRemainUseTool])
 
 	// Map action IDs to their specific handlers
 	const actionHandlers: Record<AutoApproveAction["id"], () => void> = {
@@ -166,6 +192,7 @@ const AutoApproveMenu = ({ style }: AutoApproveMenuProps) => {
 		switchModes: handleModeSwitchChange,
 		subtasks: handleSubtasksChange,
 		retryRequests: handleRetryChange,
+remainUseTool: handleRemainUseToolChange,
 	}
 
 	return (

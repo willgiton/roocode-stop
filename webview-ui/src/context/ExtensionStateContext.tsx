@@ -13,10 +13,11 @@ import { experimentDefault, ExperimentId } from "../../../src/shared/experiments
 import { TelemetrySetting } from "../../../src/shared/TelemetrySetting"
 
 export interface ExtensionStateContextType extends ExtensionState {
-	didHydrateState: boolean
-	showWelcome: boolean
-	theme: any
-	mcpServers: McpServer[]
+didHydrateState: boolean
+showWelcome: boolean
+theme: any
+remainUseTool?: boolean
+mcpServers: McpServer[]
 	currentCheckpoint?: string
 	filePaths: string[]
 	openedTabs: Array<{ label: string; isActive: boolean; path?: string }>
@@ -71,8 +72,9 @@ export interface ExtensionStateContextType extends ExtensionState {
 	setMaxOpenTabsContext: (value: number) => void
 	setTelemetrySetting: (value: TelemetrySetting) => void
 	remoteBrowserEnabled?: boolean
-	setRemoteBrowserEnabled: (value: boolean) => void
-	machineId?: string
+setRemoteBrowserEnabled: (value: boolean) => void
+setRemainUseTool: (value: boolean) => void
+machineId?: string
 }
 
 export const ExtensionStateContext = createContext<ExtensionStateContextType | undefined>(undefined)
@@ -139,8 +141,9 @@ export const ExtensionStateContextProvider: React.FC<{ children: React.ReactNode
 		maxOpenTabsContext: 20,
 		cwd: "",
 		browserToolEnabled: true,
-		telemetrySetting: "unset",
-		showRooIgnoredFiles: true, // Default to showing .rooignore'd files with lock symbol (current behavior)
+telemetrySetting: "unset",
+showRooIgnoredFiles: true, // Default to showing .rooignore'd files with lock symbol (current behavior)
+remainUseTool: true, // Default to allowing LLM to use tools
 	})
 
 	const [didHydrateState, setDidHydrateState] = useState(false)
@@ -283,8 +286,9 @@ export const ExtensionStateContextProvider: React.FC<{ children: React.ReactNode
 		setBrowserToolEnabled: (value) => setState((prevState) => ({ ...prevState, browserToolEnabled: value })),
 		setTelemetrySetting: (value) => setState((prevState) => ({ ...prevState, telemetrySetting: value })),
 		setShowRooIgnoredFiles: (value) => setState((prevState) => ({ ...prevState, showRooIgnoredFiles: value })),
-		setRemoteBrowserEnabled: (value) => setState((prevState) => ({ ...prevState, remoteBrowserEnabled: value })),
-	}
+setRemoteBrowserEnabled: (value) => setState((prevState) => ({ ...prevState, remoteBrowserEnabled: value })),
+setRemainUseTool: (value) => setState((prevState) => ({ ...prevState, remainUseTool: value })),
+}
 
 	return <ExtensionStateContext.Provider value={contextValue}>{children}</ExtensionStateContext.Provider>
 }
