@@ -320,7 +320,7 @@
 		"update-contributors": "node scripts/update-contributors.js"
 	},
 	"dependencies": {
-		"@anthropic-ai/bedrock-sdk": "^0.10.2",
+		"@anthropic-ai/bedrock-sdk": "^0.12.4",
 		"@anthropic-ai/sdk": "^0.37.0",
 		"@anthropic-ai/vertex-sdk": "^0.7.0",
 		"@aws-sdk/client-bedrock-runtime": "^3.706.0",
