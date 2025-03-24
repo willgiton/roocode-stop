@@ -1,3 +1,7 @@
+# Roo Code / approve remain to use tools
+
+这是一个基于 Roo Code 3.9.2 的修改版本，添加了一个新功能：ApproveRemaindtoUseTools - 在代码编写过程中提醒使用工具。
+
 <div align="center">
 <sub>
 
